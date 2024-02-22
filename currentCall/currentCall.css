@@ -1,0 +1,44 @@
+#currentCallContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-around;
+  font-size: 18px;
+  padding: 10px
+}
+
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.contactName {
+  font-weight: 600;
+}
+
+.hangUpButton {
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+.hangUpButton:hover {
+  border: none;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hangUpImage {
+  width: 48px;
+}
