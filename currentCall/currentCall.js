@@ -3,9 +3,10 @@ import { loadPageWithStylesAndScripts } from "../utils/loadPageWithStylesAndScri
 
 export const currentCall = (phoneNumber) => {
     const hangUpButton = document.querySelector('.hangUpButton');
+    const contactNumberDiv = document.querySelector('.contactNumber')
+    contactNumberDiv.innerHTML = phoneNumber
 
     hangUpButton.addEventListener('click', () => {
-        console.log('нажата');
           loadPageWithStylesAndScripts('/dialer.html', dialer)
       });
 }

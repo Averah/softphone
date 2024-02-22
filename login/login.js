@@ -1,37 +1,8 @@
 import JsSIP from 'jssip';
+import { dialer } from '../dialer/dialer';
+import { loadPageWithStylesAndScripts } from '../utils/loadPageWithStylesAndScripts';
 
-
-
-// const socket = new JsSIP.WebSocketInterface(`ws://voip.uiscom.ru:9050`);
-// const configuration = {
-//   sockets: [socket],
-//   uri: `sip:0332740@voip.uiscom.ru`,
-//   password: 'Z8dPNMqmLP',
-// ws_servers: 'ws://voip.uiscom.ru:9050'
-// };
-
-// ua = new JsSIP.UA(configuration);
-// console.log('ua', ua);
-// ua.on('registrationFailed', () => {
-//   console.log('Registration failed');
-// });
-// ua.on('registered', () => {
-//   console.log('Registered');
-// });
-// ua.on('connected', () => {
-//   console.log('connected');
-// });
-
-// ua.on('disconnected', (e) => {
-//   console.log('disconnected', e);
-// });
-// ua.on('newRTCSession', (e) => {
-//   console.log('newRTCSession', e);
-// });
-// ua.start();
-
-
-export const login = (username, password, server) => {
+export const login = () => {
 
   const registerForm = document.getElementById('registerForm');
   const usernameInput = document.getElementById('username');
@@ -63,6 +34,9 @@ export const login = (username, password, server) => {
     ua.on('registered', () => {
       console.log('Registered');
       statusDiv.innerHTML = 'Registered';
+      chrome.storage.session.set({registered: true}).then(() => {
+        console.log("Value is set");
+      })
     });
 
     ua.on('disconnected', (e) => {
