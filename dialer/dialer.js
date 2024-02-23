@@ -1,5 +1,5 @@
 import { currentCall } from "../currentCall/currentCall";
-import { loadPageWithStylesAndScripts } from "../utils/loadPageWithStylesAndScripts";
+import { openPage } from "../router/router";
 
 export const dialer = () => {
   const buttons = document.querySelectorAll('.numberButton');
@@ -14,14 +14,15 @@ export const dialer = () => {
 
   callButton.addEventListener('click', () => {
     if (numberInput.value) {
-      loadPageWithStylesAndScripts('/currentCall.html', () => {
-        currentCall(numberInput.value)
-      })
+      // loadPageWithStylesAndScripts('/currentCall.html', () => {
+      //   currentCall(numberInput.value)
+      // })
+      openPage('currentCall', numberInput.value)
     }
   });
 
-  chrome.commands.onCommand.addListener((command) => {
-    console.log(`Command: ${command}`);
-  });
+  // chrome.commands.onCommand.addListener((command) => {
+  //   console.log(`Command: ${command}`);
+  // });
 
 }
