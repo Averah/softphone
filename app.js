@@ -1,6 +1,6 @@
 import { chromeStorage } from './utils/chromeStorage';
-import { phoneConnection } from './phoneConnection/phoneConnection';
 import { openPage } from './router/router';
+import { phone } from './phoneConnection/phoneConnection';
 
 const content = document.getElementById('content');
 const dialerBtn = document.getElementById('dialerBtn');
@@ -14,6 +14,6 @@ chromeStorage.getItem('auth').then((result) => {
         openPage('login')
     } else {
         const authData = JSON.parse(result);
-        phoneConnection(authData.username, authData.password, authData.server, () => openPage('login'))
+        phone.login(authData.username, authData.password, authData.server, () => openPage('login'))
     }
 })

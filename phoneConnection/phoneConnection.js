@@ -1,109 +1,100 @@
 import JsSIP from 'jssip';
+import { RTCSession } from 'jssip/lib/RTCSession';
 import { openPage } from '../router/router';
 import { chromeStorage } from "../utils/chromeStorage";
 
 /** @type {JsSIP.UA} */
 export let ua;
 
-export const phoneConnection = (username, password, server, onRegistrationFailed) => {
-    const socket = new JsSIP.WebSocketInterface(`wss://${server}`);
-    const configuration = {
-        sockets: [socket],
-        uri: `sip:${username}@${server}`,
-        password
-    };
-    // let ua
-    ua = new JsSIP.UA(configuration);
-    ua.on('registrationFailed', (e) => {
-        console.log('Registration failed', e);
-        // statusDiv.innerHTML = 'Registration failed';
-        onRegistrationFailed && onRegistrationFailed()
-    });
-
-    ua.on('connected', () => {
-        console.log('Connected');
-        // statusDiv.innerHTML = 'Connected';
-    });
-
-    ua.on('registered', () => {
-        console.log('Registered');
-        // statusDiv.innerHTML = 'Registered';
-        chromeStorage.setItem('auth', JSON.stringify({username, password, server}))
-        openPage('dialer')
-
-    });
-
-    ua.on('disconnected', (e) => {
-        console.log('disconnected', e);
-    });
-    ua.on('newRTCSession', (e) => {
-        console.log('newRTCSession', e);
-    });
-
-    ua.start();
-
-    setTimeout(() => {
-        const eventHandlers = {
-            'progress': function(e) {
-              console.log('call is in progress');
-            },
-            'failed': function(e) {
-              console.log('call failed with cause: '+ e.data.cause);
-            },
-            'ended': function(e) {
-              console.log('call ended with cause: '+ e.data.cause);
-            },
-            'confirmed': function(e) {
-              console.log('call confirmed');
-            }
-          };
-          
-          const options = {
-            'eventHandlers'    : eventHandlers,
-            'mediaConstraints' : { 'audio': true, 'video': true }
-          };
-        const session = ua.call('sip:0332739@voip.uiscom.ru', {
-            pcConfig:
+export const phone = {
+    /** @type {JsSIP.UA} */
+    ua: null,
+    /** @type {RTCSession} */
+    session: null,
+    server: null,
+    callTimerId: null,
+    login(username, password, server, onRegistrationFailed) {
+        this.server = server;
+        const socket = new JsSIP.WebSocketInterface(`wss://${server}`);
+        const configuration = {
+            sockets: [socket],
+            uri: `sip:${username}@${server}`,
+            password
+        };
+        this.ua = new JsSIP.UA(configuration);
+        this.ua.on('registrationFailed', (e) => {
+            console.log('Registration failed', e);
+            onRegistrationFailed && onRegistrationFailed()
+        });
+    
+        this.ua.on('connected', () => {
+            console.log('Connected');
+        });
+    
+        this.ua.on('registered', () => {
+            console.log('Registered');
+            chromeStorage.setItem('auth', JSON.stringify({username, password, server}))
+            openPage('dialer')
+    
+        });
+    
+        this.ua.on('disconnected', (e) => {
+            console.log('disconnected', e);
+        });
+        this.ua.on('newRTCSession', (e) => {
+            console.log('newRTCSession', e);
+        });
+    
+        this.ua.start();
+    },
+    call({contact, onFinished, onConnecting, onProgress, onAccepted, onTimerChange}) {
+        this.session = this.ua.call(`sip:${contact}@${this.server}`,
             {
-                hackStripTcp: true, // Важно для хрома, чтоб он не тупил при звонке
-                rtcpMuxPolicy: 'negotiate', // Важно для хрома, чтоб работал multiplexing. Эту штуку обязательно нужно включить на астере.
-                iceServers: []
-            },
-            mediaConstraints:
-            {
-                audio: true, // Поддерживаем только аудио
-                video: false
-            },
-            rtcOfferConstraints:
-            {
-                offerToReceiveAudio: 1, // Принимаем только аудио
-                offerToReceiveVideo: 0
-            }
-        })
+                mediaConstraints: { audio: true, video: false },
+                rtcOfferConstraints: { 'offerToReceiveAudio': true, 'offerToReceiveVideo': false }
+            })
 
-        // session.connection
-        console.log('session.connection', session.connection);
-        console.log('session.isEstablished', session.isEstablished());
-
-        session.on('connecting', () => {
+        this.session.on('connecting', () => {
             console.log('Установление соединения...');
-          });
-        
-          session.on('progress', () => {
+            onConnecting && onConnecting()
+        });
+
+        this.session.on('progress', () => {
             console.log('Прогресс звонка...');
-          });
+            onProgress && onProgress()
+        });
+
         
-          session.on('accepted', () => {
+        this.session.on('accepted', () => {
             console.log('Звонок принят');
-          });
-        
-          session.on('failed', (data) => {
+
+            this.callTimerId = setInterval(() => {
+                const callStartTime = new Date(this.session.start_time);
+                const talkTimeDate = new Date(Date.now() - +callStartTime);
+
+                const hours = talkTimeDate.getUTCHours() || '00';
+                const minutes = talkTimeDate.getUTCMinutes() || '00';
+                const secondes = talkTimeDate.getUTCSeconds() || '00';
+
+                onTimerChange && onTimerChange(talkTimeDate.toUTCString().slice(17, 25))
+            }, 1000)
+            onAccepted && onAccepted()
+            onTimerChange && onTimerChange('00:00:00')
+        });
+
+        this.session.on('failed', (data) => {
             console.error('Ошибка звонка', data);
-          });
-        
-          session.on('ended', () => {
+            onFinished && onFinished()
+            clearInterval(this.callTimerId)
+        });
+
+        this.session.on('ended', () => {
             console.log('Звонок завершен');
-          });
-        // session.
-    }, 5000)
+            onFinished && onFinished()
+            clearInterval(this.callTimerId)
+        });
+    },
+    hangUpCall() {
+        this.session.terminate();
+    }
 }

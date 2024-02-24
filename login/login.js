@@ -1,4 +1,4 @@
-import { phoneConnection } from '../phoneConnection/phoneConnection';
+import { phone } from '../phoneConnection/phoneConnection';
 
 export const login = () => {
   const registerForm = document.getElementById('registerForm');
@@ -14,7 +14,7 @@ export const login = () => {
     const server = serverInput.value;
 
     if (username && password && server) {
-      phoneConnection(username, password, server)
+      phone.login(username, password, server)
     }
     else {
       statusDiv.innerHTML = 'Заполните все поля';
