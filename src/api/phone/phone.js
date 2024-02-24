@@ -1,7 +1,7 @@
 import JsSIP from 'jssip';
 import { RTCSession } from 'jssip/lib/RTCSession';
-import { openPage } from '../router/router';
-import { chromeStorage } from "../utils/chromeStorage";
+import { openPage } from '../../router/router';
+import { chromeStorage } from "../../utils/chromeStorage";
 
 /** @type {JsSIP.UA} */
 export let ua;

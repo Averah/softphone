@@ -1,6 +1,6 @@
 import { chromeStorage } from './utils/chromeStorage';
 import { openPage } from './router/router';
-import { phone } from './phoneConnection/phoneConnection';
+import { phone } from './api/phone/phone';
 
 const content = document.getElementById('content');
 const dialerBtn = document.getElementById('dialerBtn');

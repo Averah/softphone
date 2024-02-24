@@ -1,6 +1,7 @@
-import { phone } from '../phoneConnection/phoneConnection';
+import { phone } from '../../api/phone/phone';
+import './loginPage.css';
 
-export const login = () => {
+export const loginPage = () => {
   const registerForm = document.getElementById('registerForm');
   const usernameInput = document.getElementById('username');
   const passwordInput = document.getElementById('password');

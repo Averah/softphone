@@ -1,7 +1,8 @@
-import { phone } from '../phoneConnection/phoneConnection';
-import { openPage } from '../router/router';
+import { phone } from '../../api/phone/phone';
+import { openPage } from '../../router/router';
+import './currentCallPage.css';
 
-export const currentCall = (phoneNumber) => {
+export const currentCallPage = (phoneNumber) => {
     const hangUpButton = document.querySelector('.hangUpButton');
     const contactNumberDiv = document.querySelector('.contactNumber')
     const callStatus = document.getElementById('callStatus')

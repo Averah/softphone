@@ -1,4 +1,6 @@
-export const callHistory = () => {
+import './callHistoryPage.css'
+
+export const callHistoryPage = () => {
   const callList = document.getElementById('callList');
 
   // Пример данных истории вызовов

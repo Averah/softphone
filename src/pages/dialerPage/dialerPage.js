@@ -1,7 +1,7 @@
-import { currentCall } from "../currentCall/currentCall";
-import { openPage } from "../router/router";
+import { openPage } from "../../router/router";
+import './dialerPage.css'
 
-export const dialer = () => {
+export const dialerPage = () => {
   const buttons = document.querySelectorAll('.numberButton');
   const numberInput = document.getElementById('numberInput');
   const callButton = document.querySelector('.dialerCallButton');
