@@ -9,11 +9,21 @@ const callHistoryBtn = document.getElementById('callHistoryBtn');
 dialerBtn.addEventListener('click', () => openPage('dialer'));
 callHistoryBtn.addEventListener('click', () => openPage('callHistory'));
 
-chromeStorage.getItem('auth').then((result) => {
-    if (!result) {
+chromeStorage.getItem('auth').then((authData) => {
+    if (!authData) {
         openPage('login')
     } else {
-        const authData = JSON.parse(result);
         phone.login(authData.username, authData.password, authData.server, () => openPage('login'))
     }
 })
+
+// по этому шорткату звоним последнему контакту из истории
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Enter' && e.ctrlKey) {
+        chromeStorage.getItem('callHistory').then((callHistory) => {
+            if (callHistory?.length && callHistory.length > 0) {
+                openPage('currentCall', callHistory[callHistory.length - 1].number);
+            }
+        })
+    }
+});

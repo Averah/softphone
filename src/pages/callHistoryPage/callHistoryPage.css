@@ -29,7 +29,6 @@
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid #ccc;
-  cursor: pointer;
   width: 100%;
   font-size: 15px;
 }
@@ -49,4 +48,15 @@
 
 .callItem .date {
   color: #999;
+}
+
+.callHistoryButton {
+  outline: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.callHistoryNoCalls {
+  margin: 0 auto;
 }

@@ -33,7 +33,7 @@ export const phone = {
     
         this.ua.on('registered', () => {
             console.log('Registered');
-            chromeStorage.setItem('auth', JSON.stringify({username, password, server}))
+            chromeStorage.setItem('auth', {username, password, server});
             openPage('dialer')
     
         });
@@ -46,6 +46,15 @@ export const phone = {
         });
     
         this.ua.start();
+    },
+    addToHistory(contact) {
+        chromeStorage.getItem('callHistory').then((callHistory) => {
+            if (!callHistory) {
+                chromeStorage.setItem('callHistory', [{ number: contact }]);
+            } else {
+                chromeStorage.setItem('callHistory', [...callHistory, { number: contact }]);
+            }
+        })
     },
     call({contact, onFinished, onConnecting, onProgress, onAccepted, onTimerChange}) {
         this.session = this.ua.call(`sip:${contact}@${this.server}`,
@@ -72,10 +81,6 @@ export const phone = {
                 const callStartTime = new Date(this.session.start_time);
                 const talkTimeDate = new Date(Date.now() - +callStartTime);
 
-                const hours = talkTimeDate.getUTCHours() || '00';
-                const minutes = talkTimeDate.getUTCMinutes() || '00';
-                const secondes = talkTimeDate.getUTCSeconds() || '00';
-
                 onTimerChange && onTimerChange(talkTimeDate.toUTCString().slice(17, 25))
             }, 1000)
             onAccepted && onAccepted()
@@ -84,17 +89,19 @@ export const phone = {
 
         this.session.on('failed', (data) => {
             console.error('Ошибка звонка', data);
-            onFinished && onFinished()
-            clearInterval(this.callTimerId)
+            onFinished && onFinished(data.cause);
+            clearInterval(this.callTimerId);
+            this.addToHistory(contact);
         });
 
         this.session.on('ended', () => {
             console.log('Звонок завершен');
-            onFinished && onFinished()
-            clearInterval(this.callTimerId)
+            onFinished && onFinished();
+            clearInterval(this.callTimerId);
+            this.addToHistory(contact);
         });
     },
     hangUpCall() {
-        this.session.terminate();
+        this.session && this.session.terminate();
     }
 }

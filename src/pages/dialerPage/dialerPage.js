@@ -7,22 +7,14 @@ export const dialerPage = () => {
   const callButton = document.querySelector('.dialerCallButton');
 
   buttons.forEach((button) => {
-    button.addEventListener('click', () => {
+    button.onclick = () => {
       numberInput.value += button.innerHTML;
-    });
-  });
-
-  callButton.addEventListener('click', () => {
-    if (numberInput.value) {
-      // loadPageWithStylesAndScripts('/currentCall.html', () => {
-      //   currentCall(numberInput.value)
-      // })
-      openPage('currentCall', numberInput.value)
     }
   });
 
-  // chrome.commands.onCommand.addListener((command) => {
-  //   console.log(`Command: ${command}`);
-  // });
-
+  callButton.onclick = () => {
+    if (numberInput.value) {
+      openPage('currentCall', numberInput.value)
+    }
+  }
 }

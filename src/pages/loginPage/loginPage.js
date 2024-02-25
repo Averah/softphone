@@ -8,7 +8,7 @@ export const loginPage = () => {
   const serverInput = document.getElementById('server');
   const statusDiv = document.getElementById('status');
 
-  registerForm.addEventListener('submit', (e) => {
+  registerForm.onsubmit = (e) => {
     e.preventDefault();
     const username = usernameInput.value;
     const password = passwordInput.value;
@@ -20,8 +20,7 @@ export const loginPage = () => {
     else {
       statusDiv.innerHTML = 'Заполните все поля';
     }
-
-  })
+  }
 }
 
 

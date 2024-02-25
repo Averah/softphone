@@ -11,26 +11,34 @@ export const currentCallPage = (phoneNumber) => {
 
     phone.call({
         contact: phoneNumber,
-        onFinished: () => {
-            callStatus.innerHTML = 'Разговор окончен'
-            setTimeout(() => openPage('dialer'), 1000)
+        onFinished: (failCause) => {
+            switch (failCause) {
+                case 'Busy':
+                    callStatus.innerHTML = 'Сброшено';
+                    break;                
+                case 'Unavailable':
+                    callStatus.innerHTML = 'Недоступен';
+                    break;
+            
+                default:
+                    callStatus.innerHTML = 'Разговор окончен';
+                    break;
+            }
+            setTimeout(() => openPage('dialer'), 1000);
         },
         onAccepted: () => {
-            callStatus.innerHTML = 'Идет разговор'
+            callStatus.innerHTML = 'Идет разговор';
         },
         onConnecting: () => {
-            callStatus.innerHTML = 'Устанавливаем соединение...'
+            callStatus.innerHTML = 'Устанавливаем соединение...';
         },        
         onProgress: () => {
-            callStatus.innerHTML = 'Звоним...'
+            callStatus.innerHTML = 'Звоним...';
         },
         onTimerChange: (time) => {
-            callTime.innerHTML = time
+            callTime.innerHTML = time;
         }
     })
 
-    hangUpButton.addEventListener('click', () => {
-        phone.hangUpCall()
-        openPage('dialer')
-    });
+    hangUpButton.onclick = () => phone.hangUpCall();
 }
