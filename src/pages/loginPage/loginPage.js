@@ -15,7 +15,9 @@ export const loginPage = () => {
     const server = serverInput.value;
 
     if (username && password && server) {
-      phone.login(username, password, server)
+      phone.login(username, password, server, () => {
+        statusDiv.innerHTML = 'Ошибка при подключении';
+      })
     }
     else {
       statusDiv.innerHTML = 'Заполните все поля';
