@@ -13,7 +13,12 @@ chromeStorage.getItem('auth').then((authData) => {
     if (!authData) {
         openPage('login')
     } else {
-        phone.login(authData.username, authData.password, authData.server, () => openPage('login'))
+        phone.login({ 
+            username: authData.username, 
+            password: authData.password, 
+            server: authData.server, 
+            onRegistrationFailed: () => openPage('login')
+        });
     }
 })
 

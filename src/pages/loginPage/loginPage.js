@@ -8,6 +8,9 @@ export const loginPage = () => {
   const serverInput = document.getElementById('server');
   const statusDiv = document.getElementById('status');
 
+  const navbar = document.getElementById('navbar');
+  navbar.style.display = 'none';
+
   registerForm.onsubmit = (e) => {
     e.preventDefault();
     const username = usernameInput.value;
@@ -15,8 +18,16 @@ export const loginPage = () => {
     const server = serverInput.value;
 
     if (username && password && server) {
-      phone.login(username, password, server, () => {
-        statusDiv.innerHTML = 'Ошибка при подключении';
+      phone.login({
+        username,
+        password,
+        server,
+        onRegistrationFailed: () => {
+          statusDiv.innerHTML = 'Ошибка при подключении';
+        },
+        onRegistered: () => {
+          navbar.style.display = null;
+        }
       })
     }
     else {

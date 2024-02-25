@@ -13,7 +13,7 @@ export const phone = {
     session: null,
     server: null,
     callTimerId: null,
-    login(username, password, server, onRegistrationFailed) {
+    login({ username, password, server, onRegistrationFailed, onRegistered }) {
         this.server = server;
         const socket = new JsSIP.WebSocketInterface(`wss://${server}`);
         const configuration = {
@@ -35,6 +35,7 @@ export const phone = {
             console.log('Registered');
             chromeStorage.setItem('auth', {username, password, server});
             openPage('dialer')
+            onRegistered && onRegistered()
     
         });
     
