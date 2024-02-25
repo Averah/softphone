@@ -1,15 +1,15 @@
 import { openPage } from '../../router/router';
-import { chromeStorage } from '../../utils/chromeStorage'
+import { chromeStorage } from '../../utils/isomorphicStorage'
 import './callHistoryPage.css'
 
 export const callHistoryPage = () => {
-  chromeStorage.getItem('callHistory').then((result) => {
+  chromeStorage.getItem('callHistory').then((callHistoryData) => {
     const list = document.getElementById('list');
 
-    if (!result) {
+    if (!callHistoryData) {
       list.innerHTML = '<div class="callHistoryNoCalls">Нет последних вызовов</div>';
     } else {
-      list.innerHTML = result.reverse().map((callItem) => `
+      list.innerHTML = callHistoryData.reverse().map((callItem) => `
       <li class="callItem">
         <span>${callItem.number}</span>
         <button class="callHistoryButton" data-contact="${callItem.number}">

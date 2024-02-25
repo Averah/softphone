@@ -1,7 +1,7 @@
 import JsSIP from 'jssip';
 import { RTCSession } from 'jssip/lib/RTCSession';
 import { openPage } from '../../router/router';
-import { chromeStorage } from "../../utils/chromeStorage";
+import { chromeStorage } from "../../utils/isomorphicStorage";
 
 /** @type {JsSIP.UA} */
 export let ua;
@@ -24,7 +24,7 @@ export const phone = {
         this.ua = new JsSIP.UA(configuration);
         this.ua.on('registrationFailed', (e) => {
             console.log('Registration failed', e);
-            onRegistrationFailed && onRegistrationFailed()
+            onRegistrationFailed && onRegistrationFailed();
         });
     
         this.ua.on('connected', () => {
@@ -34,8 +34,8 @@ export const phone = {
         this.ua.on('registered', () => {
             console.log('Registered');
             chromeStorage.setItem('auth', {username, password, server});
-            openPage('dialer')
-            onRegistered && onRegistered()
+            openPage('dialer');
+            onRegistered && onRegistered();
     
         });
     

@@ -1,4 +1,4 @@
-import { chromeStorage } from './utils/chromeStorage';
+import { chromeStorage } from './utils/isomorphicStorage';
 import { openPage } from './router/router';
 import { phone } from './api/phone/phone';
 
