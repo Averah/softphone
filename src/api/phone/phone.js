@@ -26,26 +26,26 @@ export const phone = {
             console.log('Registration failed', e);
             onRegistrationFailed && onRegistrationFailed();
         });
-    
+
         this.ua.on('connected', () => {
             console.log('Connected');
         });
-    
+
         this.ua.on('registered', () => {
             console.log('Registered');
-            chromeStorage.setItem('auth', {username, password, server});
+            chromeStorage.setItem('auth', { username, password, server });
             openPage('dialer');
             onRegistered && onRegistered();
-    
+
         });
-    
+
         this.ua.on('disconnected', (e) => {
             console.log('disconnected', e);
         });
         this.ua.on('newRTCSession', (e) => {
             console.log('newRTCSession', e);
         });
-    
+
         this.ua.start();
     },
     addToHistory(contact) {
@@ -57,7 +57,7 @@ export const phone = {
             }
         })
     },
-    call({contact, onFinished, onConnecting, onProgress, onAccepted, onTimerChange}) {
+    call({ contact, onFinished, onConnecting, onProgress, onAccepted, onTimerChange }) {
         this.session = this.ua.call(`sip:${contact}@${this.server}`,
             {
                 mediaConstraints: { audio: true, video: false },
@@ -66,15 +66,15 @@ export const phone = {
 
         this.session.on('connecting', () => {
             console.log('Установление соединения...');
-            onConnecting && onConnecting()
+            onConnecting && onConnecting();
         });
 
         this.session.on('progress', () => {
             console.log('Прогресс звонка...');
-            onProgress && onProgress()
+            onProgress && onProgress();
         });
 
-        
+
         this.session.on('accepted', () => {
             console.log('Звонок принят');
 
@@ -84,8 +84,8 @@ export const phone = {
 
                 onTimerChange && onTimerChange(talkTimeDate.toUTCString().slice(17, 25))
             }, 1000)
-            onAccepted && onAccepted()
-            onTimerChange && onTimerChange('00:00:00')
+            onAccepted && onAccepted();
+            onTimerChange && onTimerChange('00:00:00');
         });
 
         this.session.on('failed', (data) => {

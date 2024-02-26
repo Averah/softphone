@@ -8,7 +8,7 @@ export const openPage = (pageName, ...pageArgs) => {
     switch (pageName) {
         case 'dialer':
             loadPageWithStylesAndScripts('/dialer.html', () => dialerPage(...pageArgs))
-            break; 
+            break;
         case 'login':
             loadPageWithStylesAndScripts('/login.html', () => loginPage(...pageArgs))
             break;

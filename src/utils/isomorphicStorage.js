@@ -10,7 +10,7 @@ export const chromeStorage = {
         if (typeof chrome.storage !== 'undefined') {
             return new Promise((resolve) => {
                 chrome.storage.local.get([key], (result) => {
-                    value = result[key] ? resolve(JSON.parse(result[key])) : resolve(undefined);
+                    result[key] ? resolve(JSON.parse(result[key])) : resolve(undefined);
                 });
             })
         } else {

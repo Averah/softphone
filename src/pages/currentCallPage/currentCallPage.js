@@ -14,24 +14,42 @@ export const currentCallPage = (phoneNumber) => {
         onFinished: (failCause) => {
             switch (failCause) {
                 case 'Busy':
-                    callStatus.innerHTML = 'Сброшено';
-                    break;                
+                    callStatus.innerHTML = 'Занято';
+                    break;
                 case 'Unavailable':
                     callStatus.innerHTML = 'Недоступен';
                     break;
-            
+
                 default:
                     callStatus.innerHTML = 'Разговор окончен';
                     break;
             }
-            setTimeout(() => openPage('dialer'), 1000);
+            chrome?.runtime?.sendMessage({
+                action: 'updateBadge',
+                value: 'End'
+            });
+            setTimeout(() => {
+                chrome?.runtime?.sendMessage({
+                    action: 'updateBadge',
+                    value: null
+                });
+                openPage('dialer')
+            }, 1000);
         },
         onAccepted: () => {
             callStatus.innerHTML = 'Идет разговор';
+            chrome?.runtime?.sendMessage({
+                action: 'updateBadge',
+                value: 'Talk'
+            });
         },
         onConnecting: () => {
             callStatus.innerHTML = 'Устанавливаем соединение...';
-        },        
+            chrome?.runtime?.sendMessage({
+                action: 'updateBadge',
+                value: 'Wait'
+            });
+        },
         onProgress: () => {
             callStatus.innerHTML = 'Звоним...';
         },

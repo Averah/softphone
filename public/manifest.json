@@ -13,19 +13,14 @@
     },
     "permissions": [
       "storage",
+      "audioCapture",
       "notifications",
       "unlimitedStorage",
       "http://*/*",
       "https://*/*"
     ],
-    "commands": {
-      "makeCall": {
-        "suggested_key": {
-          "default": "Ctrl+Shift+Y",
-          "mac": "Command+Shift+Y"
-        },
-        "description": "allows to make a call on dialer page"
-      }
-  }
+    "background": {
+      "service_worker": "background.js"
+    }
 }
   

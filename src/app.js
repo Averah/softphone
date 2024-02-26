@@ -2,7 +2,6 @@ import { chromeStorage } from './utils/isomorphicStorage';
 import { openPage } from './router/router';
 import { phone } from './api/phone/phone';
 
-const content = document.getElementById('content');
 const dialerBtn = document.getElementById('dialerBtn');
 const callHistoryBtn = document.getElementById('callHistoryBtn');
 
@@ -13,14 +12,20 @@ chromeStorage.getItem('auth').then((authData) => {
     if (!authData) {
         openPage('login')
     } else {
-        phone.login({ 
-            username: authData.username, 
-            password: authData.password, 
-            server: authData.server, 
+        phone.login({
+            username: authData.username,
+            password: authData.password,
+            server: authData.server,
             onRegistrationFailed: () => openPage('login')
         });
     }
 })
+
+// чтобы отследить закрытие расширения
+chrome?.runtime?.connect({ name: "popup" });
+window.addEventListener('unload', () => {
+    phone.hangUpCall();
+});
 
 // по этому шорткату звоним последнему контакту из истории
 window.addEventListener('keydown', (e) => {
@@ -32,3 +37,13 @@ window.addEventListener('keydown', (e) => {
         })
     }
 });
+
+setTimeout(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .catch(function () {
+            chrome.tabs.create({
+                url: chrome.extension.getURL("options.html"),
+                selected: true
+            })
+        });
+}, 100);
