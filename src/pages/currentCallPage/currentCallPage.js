@@ -9,9 +9,15 @@ export const currentCallPage = (phoneNumber) => {
     const callTime = document.getElementById('callTime')
     contactNumberDiv.innerHTML = phoneNumber
 
+    const navbar = document.getElementById('navbar');
+    navbar.style.display = 'none';
+
+    let openDialerPageTimerId
+
     phone.call({
         contact: phoneNumber,
         onFinished: (failCause) => {
+            navbar.style.display = null;
             switch (failCause) {
                 case 'Busy':
                     callStatus.innerHTML = 'Занято';
@@ -33,6 +39,8 @@ export const currentCallPage = (phoneNumber) => {
                     action: 'updateBadge',
                     value: null
                 });
+            }, 1000);            
+            openDialerPageTimerId = setTimeout(() => {
                 openPage('dialer')
             }, 1000);
         },
@@ -59,4 +67,8 @@ export const currentCallPage = (phoneNumber) => {
     })
 
     hangUpButton.onclick = () => phone.hangUpCall();
+
+    return () => {
+        clearTimeout(openDialerPageTimerId)
+    }
 }

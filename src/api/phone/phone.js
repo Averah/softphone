@@ -43,7 +43,7 @@ export const phone = {
             console.log('disconnected', e);
         });
         this.ua.on('newRTCSession', (e) => {
-            console.log('newRTCSession', e);
+            console.log('newRTCSession');
         });
 
         this.ua.start();
