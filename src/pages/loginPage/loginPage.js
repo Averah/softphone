@@ -1,4 +1,5 @@
 import { phone } from '../../api/phone/phone';
+import { openPage } from '../../router/router';
 import './loginPage.css';
 
 export const loginPage = () => {
@@ -27,6 +28,7 @@ export const loginPage = () => {
         },
         onRegistered: () => {
           navbar.style.display = null;
+          openPage('dialer');
         }
       })
     }

@@ -119,20 +119,6 @@ export const phone = {
         });
 
         this.sessionFinishHandler({ onFinished, contact });
-
-        // this.session.on('failed', (data) => {  
-        //     console.error('Ошибка звонка', data);
-        //     onFinished && onFinished(data.cause);
-        //     clearInterval(this.callTimerId);
-        //     this.addToHistory(contact);
-        // });
-
-        // this.session.on('ended', (e) => {
-        //     console.log('Звонок завершен');
-        //     onFinished && onFinished();
-        //     clearInterval(this.callTimerId);
-        //     this.addToHistory(contact);
-        // });
     },
 
     call(contact) {
