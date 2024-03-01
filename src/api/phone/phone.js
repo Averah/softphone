@@ -44,23 +44,19 @@ export const phone = {
         });
         this.ua.on('newRTCSession', (e) => {
             console.log('newRTCSession');
-            const session = e.session;
+            const currentSession = e.session;
 
             if (session.direction === 'incoming') {
-              // Обработка входящего звонка
-          
-              session.connection.addEventListener('addstream', (e) => {
-                this.remoteAudio.srcObject = e.stream;
-                this.remoteAudio.play();
-              });
+                currentSession.connection.addEventListener('addstream', (e) => {
+                    this.remoteAudio.srcObject = e.stream;
+                    this.remoteAudio.play();
+                });
             } else {
-              // Обработка исходящего звонка
-              session.connection.addEventListener('addstream', (e) => {
-                // Воспроизведение аудио собеседника
-                const audio = new window.Audio();
-                audio.srcObject = e.stream;
-                audio.play();
-              });
+                currentSession.connection.addEventListener('addstream', (e) => {
+                    const audio = new window.Audio();
+                    audio.srcObject = e.stream;
+                    audio.play();
+                });
             }
         });
 
