@@ -2,7 +2,7 @@ import { phone } from '../../api/phone/phone';
 import { openPage } from '../../router/router';
 import './currentCallPage.css';
 
-export const currentCallPage = (phoneNumber) => {
+export const currentCallPage = (phoneNumber, isOutgoingCall) => {
     const hangUpButton = document.querySelector('.hangUpButton');
     const contactNumberDiv = document.querySelector('.contactNumber')
     const callStatus = document.getElementById('callStatus')
@@ -14,7 +14,11 @@ export const currentCallPage = (phoneNumber) => {
 
     let openDialerPageTimerId
 
-    phone.call({
+    if (isOutgoingCall) {
+        phone.call(phoneNumber)
+    }
+
+    phone.sessionListenersHandler({
         contact: phoneNumber,
         onFinished: (failCause) => {
             navbar.style.display = null;
@@ -39,7 +43,7 @@ export const currentCallPage = (phoneNumber) => {
                     action: 'updateBadge',
                     value: null
                 });
-            }, 1000);            
+            }, 1000);
             openDialerPageTimerId = setTimeout(() => {
                 openPage('dialer')
             }, 1000);

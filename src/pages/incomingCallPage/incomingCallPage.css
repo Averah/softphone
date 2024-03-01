@@ -1,0 +1,33 @@
+#currentCallContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.actionsContainer {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.answerButton {
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+  }
+  
+.answerButton:hover {
+    border: none;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.answerImage {
+    width: 48px;
+}

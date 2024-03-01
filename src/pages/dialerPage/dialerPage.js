@@ -5,6 +5,7 @@ export const dialerPage = () => {
   const buttons = document.querySelectorAll('.numberButton');
   const numberInput = document.getElementById('numberInput');
   const callButton = document.querySelector('.dialerCallButton');
+  const isOutgoingCall = true;
 
   buttons.forEach((button) => {
     button.onclick = () => {
@@ -14,7 +15,7 @@ export const dialerPage = () => {
 
   callButton.onclick = () => {
     if (numberInput.value) {
-      openPage('currentCall', numberInput.value)
+      openPage('currentCall', numberInput.value, isOutgoingCall)
     }
   }
 }

@@ -1,6 +1,7 @@
 import { callHistoryPage } from "../pages/callHistoryPage/callHistoryPage";
 import { currentCallPage } from "../pages/currentCallPage/currentCallPage";
 import { dialerPage } from "../pages/dialerPage/dialerPage";
+import { incomingCallPage } from "../pages/incomingCallPage/incomingCallPage";
 import { loginPage } from "../pages/loginPage/loginPage";
 import { loadPageWithStylesAndScripts } from "../utils/loadPageWithStylesAndScripts"
 
@@ -29,6 +30,11 @@ export const openPage = (pageName, ...pageArgs) => {
         case 'currentCall':
             loadPageWithStylesAndScripts('/currentCall.html', () => currentCallPage(...pageArgs)).then((cleanUpFunc) => {
                 pageCleanupFunctions['currentCall'] = cleanUpFunc;
+            })
+            break;
+        case 'incomingCall':
+            loadPageWithStylesAndScripts('/incomingCall.html', () => incomingCallPage(...pageArgs)).then((cleanUpFunc) => {
+                pageCleanupFunctions['incomingCall'] = cleanUpFunc;
             })
             break;
         default:

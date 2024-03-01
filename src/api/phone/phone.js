@@ -22,6 +22,7 @@ export const phone = {
             password
         };
         this.ua = new JsSIP.UA(configuration);
+        console.log(ua);
         this.ua.on('registrationFailed', (e) => {
             console.log('Registration failed', e);
             onRegistrationFailed && onRegistrationFailed();
@@ -44,15 +45,18 @@ export const phone = {
         });
         this.ua.on('newRTCSession', (e) => {
             console.log('newRTCSession');
-            const currentSession = e.session;
+            this.session = e.session;
+            console.log(this.session);
 
-            if (session.direction === 'incoming') {
-                currentSession.connection.addEventListener('addstream', (e) => {
+            if (this.session.direction === 'incoming') {
+                this.session.connection && this.session.connection.addEventListener('addstream', (e) => {
                     this.remoteAudio.srcObject = e.stream;
                     this.remoteAudio.play();
                 });
+                const contact = this.session.local_identity.uri.user;
+                openPage('incomingCall', contact);
             } else {
-                currentSession.connection.addEventListener('addstream', (e) => {
+                this.session.connection.addEventListener('addstream', (e) => {
                     const audio = new window.Audio();
                     audio.srcObject = e.stream;
                     audio.play();
@@ -71,12 +75,7 @@ export const phone = {
             }
         })
     },
-    call({ contact, onFinished, onConnecting, onProgress, onAccepted, onTimerChange }) {
-        this.session = this.ua.call(`sip:${contact}@${this.server}`,
-            {
-                mediaConstraints: { audio: true, video: false },
-                rtcOfferConstraints: { 'offerToReceiveAudio': true, 'offerToReceiveVideo': false }
-            })
+    sessionListenersHandler({ onFinished, onConnecting, onProgress, onAccepted, onTimerChange, contact }) {
 
         this.session.on('connecting', () => {
             console.log('Установление соединения...');
@@ -116,7 +115,27 @@ export const phone = {
             this.addToHistory(contact);
         });
     },
+
+    call(contact) {
+        this.session = this.ua.call(`sip:${contact}@${this.server}`,
+            {
+                mediaConstraints: { audio: true, video: false },
+                rtcOfferConstraints: { 'offerToReceiveAudio': true, 'offerToReceiveVideo': false }
+            })
+    },
+
     hangUpCall() {
         this.session && this.session.terminate();
+    },
+
+    answerCall() {
+        if (this.session) {
+            this.session.answer({
+                mediaConstraints: { audio: true, video: false },
+                rtcOfferConstraints: { 'offerToReceiveAudio': true, 'offerToReceiveVideo': false }
+            });
+            const isOutgoingCall = false;
+            openPage('currentCall', this.session.local_identity.uri.user, isOutgoingCall)
+        }
     }
 }

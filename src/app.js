@@ -47,3 +47,5 @@ setTimeout(() => {
             })
         });
 }, 100);
+
+console.log(phone.session);
