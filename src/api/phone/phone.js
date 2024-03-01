@@ -46,21 +46,9 @@ export const phone = {
         this.ua.on('newRTCSession', (e) => {
             console.log('newRTCSession');
             this.session = e.session;
-            console.log(this.session);
-
             if (this.session.direction === 'incoming') {
-                this.session.connection && this.session.connection.addEventListener('addstream', (e) => {
-                    this.remoteAudio.srcObject = e.stream;
-                    this.remoteAudio.play();
-                });
                 const contact = this.session.local_identity.uri.user;
                 openPage('incomingCall', contact);
-            } else {
-                this.session.connection.addEventListener('addstream', (e) => {
-                    const audio = new window.Audio();
-                    audio.srcObject = e.stream;
-                    audio.play();
-                });
             }
         });
 
@@ -121,7 +109,13 @@ export const phone = {
             {
                 mediaConstraints: { audio: true, video: false },
                 rtcOfferConstraints: { 'offerToReceiveAudio': true, 'offerToReceiveVideo': false }
-            })
+            });
+
+        this.session.connection.addEventListener("addstream", (e) => {
+            const audio = new window.Audio();
+            audio.srcObject = e.stream;
+            audio.play();
+        });
     },
 
     hangUpCall() {
@@ -133,6 +127,11 @@ export const phone = {
             this.session.answer({
                 mediaConstraints: { audio: true, video: false },
                 rtcOfferConstraints: { 'offerToReceiveAudio': true, 'offerToReceiveVideo': false }
+            });
+            this.session.connection.addEventListener("addstream", (e) => {
+                const audio = new window.Audio();
+                audio.srcObject = e.stream;
+                audio.play();
             });
             const isOutgoingCall = false;
             openPage('currentCall', this.session.local_identity.uri.user, isOutgoingCall)
