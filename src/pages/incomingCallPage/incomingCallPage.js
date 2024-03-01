@@ -11,12 +11,23 @@ export const incomingCallPage = (phoneNumber) => {
     const navbar = document.getElementById('navbar');
     navbar.style.display = 'none';
 
+    phone.sessionFinishHandler({
+        onFinished: () => {
+            openPage('dialer');
+        },
+        contact: phoneNumber,
+    });
+
     hangUpButton.onclick = () => {
         phone.addToHistory(phoneNumber)
         phone.hangUpCall();
         openPage('dialer');
         navbar.style.display = null;
     };
-    answerButton.onclick = () => phone.answerCall();
-
+    
+    answerButton.onclick = () => {
+        const contact = phone.answerCall();
+        const isOutgoingCall = false;
+        openPage('currentCall', contact, isOutgoingCall)
+    };
 }

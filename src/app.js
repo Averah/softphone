@@ -16,7 +16,9 @@ chromeStorage.getItem('auth').then((authData) => {
             username: authData.username,
             password: authData.password,
             server: authData.server,
-            onRegistrationFailed: () => openPage('login')
+            onRegistrationFailed: () => openPage('login'),
+            onRegistered: () => openPage('dialer'),
+            onIncomingCall: (contact) => openPage('incomingCall', contact),
         });
     }
 })

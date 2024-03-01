@@ -73,6 +73,6 @@ export const currentCallPage = (phoneNumber, isOutgoingCall) => {
     hangUpButton.onclick = () => phone.hangUpCall();
 
     return () => {
-        clearTimeout(openDialerPageTimerId)
+        clearTimeout(openDialerPageTimerId);
     }
 }

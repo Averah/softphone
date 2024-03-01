@@ -1,6 +1,5 @@
 import JsSIP from 'jssip';
 import { RTCSession } from 'jssip/lib/RTCSession';
-import { openPage } from '../../router/router';
 import { chromeStorage } from "../../utils/isomorphicStorage";
 
 /** @type {JsSIP.UA} */
@@ -13,7 +12,9 @@ export const phone = {
     session: null,
     server: null,
     callTimerId: null,
-    login({ username, password, server, onRegistrationFailed, onRegistered }) {
+    finishSessionSubscribers: [],
+    sessionListeners: {},
+    login({ username, password, server, onRegistrationFailed, onRegistered, onIncomingCall }) {
         this.server = server;
         const socket = new JsSIP.WebSocketInterface(`wss://${server}`);
         const configuration = {
@@ -22,7 +23,7 @@ export const phone = {
             password
         };
         this.ua = new JsSIP.UA(configuration);
-        console.log(ua);
+
         this.ua.on('registrationFailed', (e) => {
             console.log('Registration failed', e);
             onRegistrationFailed && onRegistrationFailed();
@@ -35,7 +36,6 @@ export const phone = {
         this.ua.on('registered', () => {
             console.log('Registered');
             chromeStorage.setItem('auth', { username, password, server });
-            openPage('dialer');
             onRegistered && onRegistered();
 
         });
@@ -48,7 +48,7 @@ export const phone = {
             this.session = e.session;
             if (this.session.direction === 'incoming') {
                 const contact = this.session.local_identity.uri.user;
-                openPage('incomingCall', contact);
+                onIncomingCall && onIncomingCall(contact)
             }
         });
 
@@ -63,8 +63,37 @@ export const phone = {
             }
         })
     },
-    sessionListenersHandler({ onFinished, onConnecting, onProgress, onAccepted, onTimerChange, contact }) {
+    setFinishSessionSubscribers() {},
+    clearSessionListeners() {
+        Object.keys(this.sessionListeners).forEach((listenType) => {
+            this.session?.off(listenType, this.sessionListeners[listenType]);
+            delete this.sessionListeners[listenType];
+        })
+    },
+    sessionFinishHandler({ onFinished, contact }) {
+        this.clearSessionListeners();
+        const onFailedListener = (data) => {  
+            console.error('Ошибка звонка', data);
+            onFinished && onFinished(data.cause);
+            clearInterval(this.callTimerId);
+            this.addToHistory(contact);
+        }        
+        const onEndedListener = (e) => {
+            console.log('Звонок завершен');
+            onFinished && onFinished();
+            clearInterval(this.callTimerId);
+            this.addToHistory(contact);
+        }
+        this.session.on('failed', onFailedListener);
+        this.session.on('ended', onEndedListener);
 
+        this.sessionListeners['failed'] = onFailedListener;
+        this.sessionListeners['ended'] = onEndedListener;
+
+        return { onFailedListener, onEndedListener }
+    },
+    sessionListenersHandler({ onFinished, onConnecting, onProgress, onAccepted, onTimerChange, contact }) {
+        this.clearSessionListeners();
         this.session.on('connecting', () => {
             console.log('Установление соединения...');
             onConnecting && onConnecting();
@@ -89,19 +118,21 @@ export const phone = {
             onTimerChange && onTimerChange('00:00:00');
         });
 
-        this.session.on('failed', (data) => {
-            console.error('Ошибка звонка', data);
-            onFinished && onFinished(data.cause);
-            clearInterval(this.callTimerId);
-            this.addToHistory(contact);
-        });
+        this.sessionFinishHandler({ onFinished, contact });
 
-        this.session.on('ended', () => {
-            console.log('Звонок завершен');
-            onFinished && onFinished();
-            clearInterval(this.callTimerId);
-            this.addToHistory(contact);
-        });
+        // this.session.on('failed', (data) => {  
+        //     console.error('Ошибка звонка', data);
+        //     onFinished && onFinished(data.cause);
+        //     clearInterval(this.callTimerId);
+        //     this.addToHistory(contact);
+        // });
+
+        // this.session.on('ended', (e) => {
+        //     console.log('Звонок завершен');
+        //     onFinished && onFinished();
+        //     clearInterval(this.callTimerId);
+        //     this.addToHistory(contact);
+        // });
     },
 
     call(contact) {
@@ -133,8 +164,8 @@ export const phone = {
                 audio.srcObject = e.stream;
                 audio.play();
             });
-            const isOutgoingCall = false;
-            openPage('currentCall', this.session.local_identity.uri.user, isOutgoingCall)
+
+            return this.session.local_identity.uri.user
         }
     }
 }
