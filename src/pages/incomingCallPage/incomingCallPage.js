@@ -11,11 +11,21 @@ export const incomingCallPage = (phoneNumber) => {
     const navbar = document.getElementById('navbar');
     navbar.style.display = 'none';
 
+    chrome?.runtime?.sendMessage({
+        action: 'updateBadge',
+        value: 'Call'
+    });
+
     phone.sessionFinishHandler({
         onFinished: () => {
+            chrome?.runtime?.sendMessage({
+                action: 'updateBadge',
+                value: null
+            });
             openPage('dialer');
         },
         contact: phoneNumber,
+        
     });
 
     hangUpButton.onclick = () => {
